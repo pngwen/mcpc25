@@ -1,5 +1,25 @@
 #include <stdio.h>
 
+int mulMod(int a, int b, int mod)
+{
+    long long prod = (long long)a * (long long)b;   /* ≤ 1e12, fits in 64‑bit */
+    return (int)(prod % mod);
+}
+
+int powMod(int base, int exp, int mod)
+{
+    int result = 1;
+    base %= mod;                     /* reduce once at start */
+
+    while (exp > 0) {
+        if (exp & 1)                 /* if current bit is 1 */
+            result = mulMod(result, base, mod);
+        base = mulMod(base, base, mod);  /* square */
+        exp >>= 1;                   /* next bit */
+    }
+    return result;
+}
+
 
 int isPrime(int x) 
 {
@@ -19,18 +39,16 @@ int main()
     int e;
     int l;
     int r;
-    unsigned long long product=1;
-    int b=1000000007;
+    int product=1;
+    int mod=1000000007;
     
     scanf("%d%d%d", &e, &l, &r);
 
     for(int i=l; i<=r; i++) {
         if(isPrime(i)) {
-            for(int j=1; j<=e; j++) {
-                product = (product *i) % b;
-            }
+            product=mulMod(product, powMod(i,e,mod), mod);
         }
     }
 
-    printf("%d\n", (int) (product %b));
+    printf("%d\n", product %mod);
 }
